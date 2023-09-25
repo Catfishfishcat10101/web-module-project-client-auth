@@ -1,69 +1,65 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
+import axios from 'axios';
+
+
 
 
 const AddFriend = () => {
-    const nav = useNavigate();
+    const navigate = useNavigate();
+    const [form, setForm] = useState({
+        name: "", 
+        age:"", 
+        email: ""
+    });
+    
 
-    const [inputValues, setInputValues] = useState({
-        name: '',
-        age: '',
-        email: ''
-    })
-
-    const handleChange = e => {
-        const {name, value} = e.target;
-
-        setInputValues({
-            ...inputValues,
-            [name]: value
+    const onChange = (e) => {
+        setForm({
+            ...form, 
+            [e.target.name]: e.target.value
         })
     }
 
-    const handleSubmit = e => {
+
+    const onSubmit = (e) => {
         e.preventDefault();
-        const token = localStorage.getItem('token');
-
-        axios.post('http://localhost:9000/api/friends', inputValues, {headers: {authorization: token}})
-            .then(res => {
-                console.log(res);
-                nav('/friends');
-            })
-            .catch(err => {
-                console.log(err);
-            })
+        const token = localStorage.getItem("token"); 
+        axios.post(`http://localhost:9000/api/friends`, form, {
+            headers: {
+                authorization: token,
+            },
+        })
+        .then(() => {
+            navigate("/friends");
+        })
+        .catch(err => {
+            console.log(err);
+        })
     }
-
-    return(
+  
+    return (
         <div>
-            <h3>Add Friend</h3>
-            <form onSubmit={handleSubmit}>
-                <input 
-                    type='text'
-                    name='name'
-                    placeholder="Enter friend's name..."
-                    onChange={handleChange}
-                /><br/>
-                <input 
-                    type='number'
-                    name='age'
-                    placeholder="Enter friend's age..."
-                    onChange={handleChange}
-                /><br/>
-                <input 
-                    type='text'
-                    name='email'
-                    placeholder="Enter friend's email..."
-                    onChange={handleChange}
-                /><br/>
-                <input 
-                    type='submit'
-                    value='Add Friend!'
-                />
+            <h2>AddFriend</h2>
+            <form onSubmit={onSubmit}>
+                <div>
+                    <label htmlFor="name">Username</label>
+                    <input onChange={onChange} name="name" id="name"></input>
+                </div>
+                <div>
+                    <label htmlFor="age">Age</label>
+                    <input onChange={onChange} name="age" id="age"></input>
+                </div>
+                <div>
+                    <label htmlFor="email">Email</label>
+                    <input onChange={onChange} name="email" id="email"></input>
+                </div>
+                <button >Submit</button>
             </form>
         </div>
     )
+
+
 }
 
-export default AddFriend;
+export default AddFriend; 

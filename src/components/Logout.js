@@ -1,36 +1,33 @@
-import React, { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import React, { useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 const Logout = () => {
-  const nav = useNavigate();
+    const navigate = useNavigate();
 
-  useEffect(() => {
-    const logout = async () => {
-      try {
-        const token = localStorage.getItem("token");
 
-        if (token) {
-          await axios.post(
-            "http://localhost:9000/api/logout",
-            {},
-            { headers: { authorization: token } }
-          );
+    useEffect(() => {
+        const token = localStorage.getItem("token"); 
 
-          localStorage.removeItem("token");
+        axios.post(`http://localhost:9000/api/logout`, {}, 
+        {
+            headers: {
+                authorization: token
+            }
         }
+        )
+        .then(() => {
+            localStorage.removeItem("token"); 
+            navigate("/login");
+        })
+        .catch(err => {
+            console.log(err.error)
+        })
+    }, []); 
 
-        nav("/login");
-      } catch (err) {
-        console.error(err);
-        // Handle error properly, e.g. show an error message to the user
-      }
-    };
+    return <div className="logout">You have been logged out</div>
 
-    logout();
-  }, []);
+}
 
-  return <></>;
-};
-
-export default Logout;
+export default Logout; 
