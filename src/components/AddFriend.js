@@ -1,44 +1,69 @@
-import React, { useState } from 'react';
-import axios from 'axios';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-function AddFriend() {
-    const [friendName, setFriendName] = useState('');
-    const [message, setMessage] = useState('');
 
-    const handleSubmit = (event) => {
-        event.preventDefault();
-        const API_URL = 'http://localhost:3000/api/friends';
+const AddFriend = () => {
+    const nav = useNavigate();
 
-        axios.post(API_URL, {
-            name: friendName
+    const [inputValues, setInputValues] = useState({
+        name: '',
+        age: '',
+        email: ''
+    })
+
+    const handleChange = e => {
+        const {name, value} = e.target;
+
+        setInputValues({
+            ...inputValues,
+            [name]: value
         })
-        .then(response => {
-            setMessage('Friend added sucessfully!');
-            setFriendName('');
-        })
-        .catch(err => {
-            setMessage('Error adding friend.');
-        });
-    };
+    }
 
-    return (
+    const handleSubmit = e => {
+        e.preventDefault();
+        const token = localStorage.getItem('token');
+
+        axios.post('http://localhost:9000/api/friends', inputValues, {headers: {authorization: token}})
+            .then(res => {
+                console.log(res);
+                nav('/friends');
+            })
+            .catch(err => {
+                console.log(err);
+            })
+    }
+
+    return(
         <div>
-            <h2>Add Friend</h2>
+            <h3>Add Friend</h3>
             <form onSubmit={handleSubmit}>
-                <label>
-                    Friend's Name:
-                    <input
+                <input 
                     type='text'
-                    value={friendName}
-                    onChange={(e) => setFriendName(e.target.value)}
-                    required
-                    />
-                    </label>
-                      <button type='submit'>Add</button>
+                    name='name'
+                    placeholder="Enter friend's name..."
+                    onChange={handleChange}
+                /><br/>
+                <input 
+                    type='number'
+                    name='age'
+                    placeholder="Enter friend's age..."
+                    onChange={handleChange}
+                /><br/>
+                <input 
+                    type='text'
+                    name='email'
+                    placeholder="Enter friend's email..."
+                    onChange={handleChange}
+                /><br/>
+                <input 
+                    type='submit'
+                    value='Add Friend!'
+                />
             </form>
-            {message && <p>{message}</p>}
         </div>
-    );
+    )
 }
 
 export default AddFriend;
